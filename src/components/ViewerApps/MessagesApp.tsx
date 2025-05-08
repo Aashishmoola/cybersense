@@ -1,139 +1,141 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import ChatHeader from "./MessagesApp/ChatHeader";
+import ConversationItem from "./MessagesApp/ConversationItem";
+import ConversationsList from "./MessagesApp/ConversationsList";
+import MessageItem from "./MessagesApp/MessageItem";
+import MessagesList from "./MessagesApp/MessagesList";
+import NavigationIcons from "./MessagesApp/NavigationIcons";
+import ProfileSection from "./MessagesApp/ProfileSection";
 
-export default function MessagerApp() {
-    const [activeChat, setActiveChat] = useState<string | null>(null);
+// Sample data - you can replace with actual data from your app
+const sampleConversations = [
+    {
+        id: "1",
+        name: "John Doe",
+        message: "Hey, how's it going?",
+        avatar: "/avatar1.png",
+    },
+    {
+        id: "2",
+        name: "Jane Smith",
+        message: "Are we still meeting tomorrow?",
+        avatar: "/avatar2.png",
+    },
+];
 
-    // Mock data for UI layout purposes only
-    const conversations = [
-        {
-            id: "1",
-            name: "johndoe92",
-            message: "Hello mate, how's it going?",
-            avatar: "👤",
-        },
-        {
-            id: "2",
-            name: "timmyturner",
-            message: "It's a bit crowded thought?",
-            avatar: "👤",
-        },
-        {
-            id: "3",
-            name: "mainoda",
-            message: "It's a bit crowded thought?",
-            avatar: "👤",
-        },
-    ];
+const sampleMessages = [
+    {
+        id: "1",
+        text: "Hey, how's it going?",
+        sender: "other",
+        timestamp: new Date().toISOString(),
+    },
+    {
+        id: "2",
+        text: "Good, thanks! How about you?",
+        sender: "me",
+        timestamp: new Date().toISOString(),
+    },
+];
 
-    // Simple message interface just for layout
-    const chatMessages = [
-        {
-            sender: "johndoe92",
-            content: "Hello there? sup?",
-            time: "19:30",
-            isSent: false,
-        },
-        {
+interface Message {
+    id: string;
+    text: string;
+    sender: "me" | "other";
+    timestamp: string;
+}
+
+interface Conversation {
+    id: string;
+    name: string;
+    message: string;
+    avatar: string;
+}
+
+const MessagesApp: React.FC = () => {
+    const [currentView, setCurrentView] = useState<"conversations" | "chat">(
+        "conversations",
+    );
+    const [currentConversation, setCurrentConversation] =
+        useState<Conversation | null>(null);
+    const [conversations, setConversations] =
+        useState<Conversation[]>(sampleConversations);
+    const [messages, setMessages] = useState<Message[]>(sampleMessages);
+    const [activeNavItem, setActiveNavItem] = useState("messages");
+
+    const handleSelectConversation = (id: string) => {
+        const selected = conversations.find((conv) => conv.id === id) || null;
+        setCurrentConversation(selected);
+        setCurrentView("chat");
+        // Here you would typically load messages for this conversation
+    };
+
+    const handleBackToConversations = () => {
+        setCurrentView("conversations");
+        setCurrentConversation(null);
+    };
+
+    const handleSendMessage = (text: string) => {
+        const newMessage: Message = {
+            id: Date.now().toString(),
+            text,
             sender: "me",
-            content:
-                "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor",
-            time: "19:30",
-            isSent: true,
-        },
-        { sender: "me", content: "PINGGG !!!", time: "19:32", isSent: true },
-    ];
+            timestamp: new Date().toISOString(),
+        };
+        setMessages([...messages, newMessage]);
+        // Here you would typically send the message to your backend
+    };
 
     return (
-        <div className="flex h-full">
-            {/* Left sidebar - contacts/conversations list */}
-            <div className="w-full md:w-1/3 bg-teal-100 flex flex-col">
-                {/* Profile section */}
-                <div className="p-6 bg-teal-300 text-center">
-                    <div className="flex flex-col items-center">
-                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-2">
-                            {/* User avatar placeholder */}
-                            <div className="text-4xl">👻</div>
-                        </div>
-                        <h2 className="text-xl font-semibold text-white">
-                            LEGIMIN
-                        </h2>
-                        <p className="text-sm text-white">3 minutes old</p>
-                        <p className="text-sm text-white">Level 1</p>
-                    </div>
-                </div>
-
-                {/* Navigation icons */}
-                <div className="flex justify-center p-4 border-b border-teal-200">
-                    <div className="flex space-x-8">
-                        <button className="text-teal-500">🌍</button>
-                        <button className="text-teal-500 border-b-2 border-teal-500">
-                            💬
-                        </button>
-                        <button className="text-teal-500">🏪</button>
-                        <button className="text-teal-500">⚙️</button>
-                    </div>
-                </div>
-
-                {/* Conversations list */}
-                <div className="flex-grow overflow-y-auto">
-                    {conversations.map((convo) => (
-                        <div
-                            key={convo.id}
-                            className="flex items-center p-4 hover:bg-teal-200 cursor-pointer"
-                        >
-                            <div className="w-12 h-12 rounded-full bg-teal-300 flex items-center justify-center mr-3">
-                                <span className="text-xl">{convo.avatar}</span>
-                            </div>
-                            <div className="flex-grow">
-                                <h3 className="font-medium">{convo.name}</h3>
-                                <p className="text-sm text-gray-500 truncate">
-                                    {convo.message}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+        <div className="flex flex-col h-full border rounded-lg overflow-hidden">
+            <div className="flex-shrink-0 border-b">
+                <NavigationIcons
+                    activeItem={activeNavItem}
+                    setActiveItem={setActiveNavItem}
+                />
             </div>
 
-            {/* Right chat area */}
-            <div className="hidden md:flex flex-col w-2/3 bg-white">
-                {/* Chat header */}
-                <div className="p-4 border-b flex items-center">
-                    <button className="text-teal-500 mr-4">←</button>
-                    <h2 className="font-semibold">johndoe92</h2>
-                </div>
-
-                {/* Messages area */}
-                <div className="flex-grow p-4 overflow-y-auto bg-gray-50">
-                    <div className="flex flex-col space-y-4">
-                        {chatMessages.map((msg, index) => (
-                            <div
-                                key={index}
-                                className={`flex ${msg.isSent ? "justify-end" : "justify-start"}`}
-                            >
-                                <div
-                                    className={`max-w-xs rounded-lg p-3 ${msg.isSent ? "bg-teal-300 text-white" : "bg-gray-200"}`}
-                                >
-                                    <p>{msg.content}</p>
-                                    <p className="text-xs mt-1 opacity-70">
-                                        {msg.time}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+            {currentView === "conversations" ? (
+                <>
+                    <div className="p-4 border-b">
+                        <h1 className="text-xl font-bold">Messages</h1>
                     </div>
-                </div>
-
-                {/* Input area */}
-                <div className="p-4 border-t flex">
-                    <input
-                        type="text"
-                        placeholder="type something"
-                        className="flex-grow p-2 border rounded-lg focus:outline-none focus:border-teal-400"
+                    <ProfileSection />
+                    <ConversationsList
+                        conversations={conversations}
+                        onSelectConversation={handleSelectConversation}
                     />
-                    <button className="ml-2 p-2 text-teal-500">📎</button>
-                </div>
-            </div>
+                </>
+            ) : (
+                <>
+                    <ChatHeader
+                        participantName={currentConversation?.name || ""}
+                        onBack={handleBackToConversations}
+                    />
+                    <MessagesList messages={messages} />
+
+                    {/* Message input would go here */}
+                    <div className="p-4 border-t">
+                        <input
+                            className="w-full p-2 border rounded-full"
+                            placeholder="Type a message..."
+                            onKeyPress={(e) => {
+                                if (
+                                    e.key === "Enter" &&
+                                    e.currentTarget.value.trim()
+                                ) {
+                                    handleSendMessage(
+                                        e.currentTarget.value.trim(),
+                                    );
+                                    e.currentTarget.value = "";
+                                }
+                            }}
+                        />
+                    </div>
+                </>
+            )}
         </div>
     );
-}
+};
+
+export default MessagesApp;
