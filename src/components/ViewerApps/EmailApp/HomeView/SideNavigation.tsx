@@ -1,5 +1,5 @@
 import React from "react";
-
+import IconsSVG from "./IconsSVG";
 
 
 const SideNavigation: React.FC = () => {
@@ -157,10 +157,12 @@ const SideNavigation: React.FC = () => {
                             >
                                 <div className="flex items-center">
                                     <span className="mr-2 text-gray-600">
-                                        {renderIcon(item.icon)}
+                                        <IconsSVG iconName={item.icon}/>
                                     </span>
                                     <span>{item.name}</span>
                                 </div>
+
+                                {/* Conditional render of itemcount */}
 
                                 {item.count > 0 && (
                                     <span className="px-1.5 py-0.5 text-xs bg-blue-600 text-white rounded-full">
