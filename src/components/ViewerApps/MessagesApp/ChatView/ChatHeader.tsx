@@ -1,12 +1,12 @@
 import React from "react";
 
 interface ChatHeaderProps {
-    participantName: string;
+    receiverName: string;
     onBack: () => void;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
-    participantName,
+    receiverName,
     onBack,
 }) => {
     return (
@@ -14,7 +14,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             <button className="text-teal-500 mr-4" onClick={onBack}>
                 ←
             </button>
-            <h2 className="font-semibold">{participantName}</h2>
+            <h2 className="font-semibold">{receiverName}</h2>
         </div>
     );
 };
